@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Envolviafood | Gestión Interna y RRHH</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        
+        /* Animación para el estado "En Turno" */
+        .pulse-green {
+            box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+            animation: pulse-g 2s infinite;
+        }
+        @keyframes pulse-g {
+            0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+            70% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
+    </style>
+    <script src="app.js" defer></script>
+</head>
+<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
+
+    <aside class="w-64 bg-gray-900 text-white flex flex-col hidden md:flex shadow-xl z-20 border-r border-gray-800 shrink-0">
+        <div class="h-16 flex items-center justify-center border-b border-gray-800">
+            <h1 class="text-2xl font-bold tracking-widest uppercase">Envolvia<span class="text-blue-500">food</span></h1>
+        </div>
+        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto" id="sidebarMenu">
+            </nav>
+        <div class="p-4 border-t border-gray-800 bg-gray-900">
+            <div class="flex items-center">
+                <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-sm font-bold shadow-inner">RT</div>
+                <div class="ml-3 truncate">
+                    <p class="text-sm font-medium text-white truncate">Restaurante Test</p>
+                    <a href="index.html" class="text-xs text-gray-400 hover:text-blue-400 transition">Configuración</a>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-screen overflow-hidden relative" id="interna-container">
+        
+        <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 shrink-0 shadow-sm z-10">
+            <h2 class="text-lg font-bold text-gray-800 flex items-center">
+                <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                Gestión Interna y RRHH
+            </h2>
+            <div class="flex gap-3">
+                <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm transition">
+                    + Registrar Empleado
+                </button>
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <div class="lg:col-span-2 flex flex-col gap-6">
+                
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center">
+                        <div class="p-3 bg-blue-50 text-blue-600 rounded-lg mr-4">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Plantilla Total</p>
+                            <h3 class="text-2xl font-black text-gray-900" id="kpi-total">0</h3>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center">
+                        <div class="p-3 bg-green-50 text-green-600 rounded-lg mr-4">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">En Turno Ahora</p>
+                            <h3 class="text-2xl font-black text-gray-900" id="kpi-active">0</h3>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center">
+                        <div class="p-3 bg-purple-50 text-purple-600 rounded-lg mr-4">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Próx. Nómina</p>
+                            <h3 class="text-2xl font-black text-gray-900">Viernes</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex-1">
+                    <div class="p-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                        <h3 class="font-bold text-gray-800">Directorio de Personal</h3>
+                        <div class="flex gap-2">
+                            <select class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm bg-white outline-none focus:border-blue-500 text-gray-600">
+                                <option value="all">Todos los Roles</option>
+                                <option value="cocina">Cocina</option>
+                                <option value="salon">Salón</option>
+                                <option value="delivery">Delivery</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-white text-gray-500 font-bold uppercase text-xs border-b border-gray-200 shadow-sm">
+                                <tr>
+                                    <th class="px-4 py-3">Empleado</th>
+                                    <th class="px-4 py-3">Rol / Permisos</th>
+                                    <th class="px-4 py-3 text-center">Horario Hoy</th>
+                                    <th class="px-4 py-3 text-center">Estado Actual</th>
+                                    <th class="px-4 py-3 text-right">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100" id="employee-list">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-6">
+                
+                <div class="bg-gray-900 rounded-xl shadow-xl border border-gray-800 overflow-hidden flex flex-col text-white">
+                    <div class="p-4 border-b border-gray-800 text-center bg-gray-950">
+                        <h3 class="font-bold text-gray-300 text-sm uppercase tracking-widest">Terminal de Fichaje</h3>
+                    </div>
+                    <div class="p-6 flex flex-col items-center flex-1 justify-center relative">
+                        <div class="text-4xl font-black tracking-tighter mb-6 text-blue-400 drop-shadow-[0_0_15px_rgba(96,165,250,0.4)]" id="clock-display">
+                            00:00:00
+                        </div>
+                        
+                        <p class="text-xs text-gray-400 font-semibold mb-3 text-center">Ingresa el PIN de empleado para marcar entrada/salida</p>
+                        <div class="flex gap-2 mb-4 w-full px-4">
+                            <input type="password" maxlength="4" placeholder="••••" class="w-full bg-gray-800 border border-gray-700 rounded-lg text-center text-xl font-bold py-2 outline-none focus:border-blue-500 tracking-[0.5em] text-white">
+                        </div>
+                        <button class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg transition uppercase text-sm tracking-widest shadow-[0_0_15px_rgba(37,99,235,0.3)]">
+                            Registrar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+                    <h3 class="font-bold text-gray-800 mb-4 border-b border-gray-100 pb-2">Resumen de Turnos (Semana)</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center text-sm">
+                            <span class="text-gray-600 font-medium">Horas Trabajadas</span>
+                            <span class="font-bold text-gray-900">142 hrs</span>
+                        </div>
+                        <div class="flex justify-between items-center text-sm">
+                            <span class="text-gray-600 font-medium">Horas Extra</span>
+                            <span class="font-bold text-yellow-600">12 hrs</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                            <div class="bg-blue-600 h-2 rounded-full" style="width: 75%"></div>
+                        </div>
+                        <p class="text-[10px] text-gray-400 font-semibold uppercase tracking-widest mt-1 text-right">75% del presupuesto asignado</p>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+</body>
+</html>

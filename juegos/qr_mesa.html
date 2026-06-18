@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0, user-scalable=no">
+    <title>Envolviafood | Tu Mesa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        /* Animación para notificaciones tipo Toast */
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .toast-enter { animation: slideUp 0.3s ease-out forwards; }
+        
+        /* Ocultar scrollbar para un look más nativo de App */
+        ::-webkit-scrollbar { display: none; }
+
+        /* Estilo pixel art para el botón retro */
+        .pixel-borders {
+            box-shadow: 
+                -4px 0 0 0 black,
+                4px 0 0 0 black,
+                0 -4px 0 0 black,
+                0 4px 0 0 black;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 h-screen flex flex-col overflow-hidden selection:bg-blue-200">
+
+    <div class="w-full max-w-md mx-auto bg-white h-full flex flex-col relative shadow-2xl overflow-hidden">
+        
+        <header class="pt-8 pb-4 px-6 bg-gray-900 text-white rounded-b-3xl shadow-md shrink-0 z-10 relative overflow-hidden">
+            <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#ffffff 1px, transparent 1px); background-size: 16px 16px;"></div>
+            
+            <div class="relative z-10 flex justify-between items-start">
+                <div>
+                    <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-1">Restaurante Test</p>
+                    <h1 class="text-3xl font-black">Mesa 4</h1>
+                </div>
+                <div class="bg-blue-600/20 text-blue-400 p-2 rounded-xl backdrop-blur-sm shadow-inner">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto px-6 py-6 space-y-8 pb-28">
+            
+            <section>
+                <div class="flex justify-between items-end mb-4">
+                    <h2 class="text-lg font-bold text-gray-800">Estado de Cuenta</h2>
+                    <span class="text-xs font-semibold text-green-600 bg-green-100 px-2 py-1 rounded-full border border-green-200">Abierta</span>
+                </div>
+                
+                <div class="bg-white border border-gray-100 rounded-2xl p-5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)]">
+                    <ul class="space-y-3 mb-4">
+                        <li class="flex justify-between text-sm">
+                            <span class="text-gray-600 font-medium">2x Hamburguesa Clásica</span>
+                            <span class="font-bold text-gray-900">$18.00</span>
+                        </li>
+                        <li class="flex justify-between text-sm">
+                            <span class="text-gray-600 font-medium">1x Papas Trufadas</span>
+                            <span class="font-bold text-gray-900">$6.50</span>
+                        </li>
+                        <li class="flex justify-between text-sm">
+                            <span class="text-gray-600 font-medium">3x Cerveza Artesanal</span>
+                            <span class="font-bold text-gray-900">$12.00</span>
+                        </li>
+                    </ul>
+                    <div class="border-t border-dashed border-gray-200 pt-4 mt-2 flex justify-between items-center">
+                        <span class="text-gray-500 text-sm font-bold uppercase">Total Actual</span>
+                        <span class="text-2xl font-black text-blue-600">$36.50</span>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <div class="mb-4 flex justify-between items-end">
+                    <div>
+                        <h2 class="text-lg font-bold text-gray-800">Arcade de la Mesa</h2>
+                        <p class="text-xs text-gray-500">Pasa el rato mientras llega la comida.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    
+                    <button onclick="openExternalGame('https://pokelike.xyz/')" class="col-span-2 relative overflow-hidden bg-[#8b9bb4] rounded-xl p-5 text-left active:scale-95 transition pixel-borders border-4 border-black flex items-center justify-between group">
+                        <div class="relative z-10 flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="w-3 h-3 bg-red-500 rounded-full border border-black animate-pulse"></span>
+                                <h3 class="text-black font-black text-lg tracking-tight uppercase" style="font-family: monospace;">Aventura 8-Bit</h3>
+                            </div>
+                            <p class="text-gray-800 text-xs font-bold leading-tight uppercase" style="font-family: monospace;">Explora, captura y lucha (1 Jugador)</p>
+                        </div>
+                        <div class="w-12 h-12 relative opacity-80 group-hover:opacity-100 transition">
+                            <div class="absolute inset-x-3 top-0 bottom-0 bg-black rounded-sm"></div>
+                            <div class="absolute inset-y-3 left-0 right-0 bg-black rounded-sm"></div>
+                        </div>
+                    </button>
+
+                    <a href="ruleta.html" class="col-span-2 relative overflow-hidden bg-gradient-to-br from-purple-600 to-indigo-800 rounded-2xl p-5 text-left shadow-lg transform active:scale-95 transition block">
+                        <div class="relative z-10">
+                            <h3 class="text-white font-bold text-lg mb-1">Ruleta de la Cuenta</h3>
+                            <p class="text-purple-200 text-xs">Gira la ruleta. Quien pierda, paga todo.</p>
+                        </div>
+                        <svg class="absolute -right-4 -bottom-4 w-24 h-24 text-white opacity-20 transform rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </a>
+
+                    <a href="vieja.html" class="bg-white border border-gray-200 rounded-2xl p-4 text-center shadow-sm active:bg-gray-50 transition flex flex-col items-center justify-center">
+                        <div class="text-3xl mb-2">❌⭕</div>
+                        <h3 class="font-bold text-gray-800 text-sm">La Vieja</h3>
+                        <p class="text-[10px] text-gray-500 mt-1">Torneo 1v1</p>
+                    </a>
+
+                    <a href="poker.html" class="bg-white border border-gray-200 rounded-2xl p-4 text-center shadow-sm active:bg-gray-50 transition flex flex-col items-center justify-center">
+                        <div class="text-3xl mb-2">🃏</div>
+                        <h3 class="font-bold text-gray-800 text-sm">Poker</h3>
+                        <p class="text-[10px] text-gray-500 mt-1">Apuesta comida</p>
+                    </a>
+                    
+                    <a href="juego_uno.html" class="col-span-2 bg-[#e50000] rounded-2xl p-4 text-center shadow-md active:opacity-90 transition flex justify-between items-center block">
+                        <div class="text-left text-white">
+                            <h3 class="font-black italic text-xl tracking-tighter">UNO!</h3>
+                            <p class="text-xs opacity-90">Salas de 2 a 6 jugadores</p>
+                        </div>
+                        <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-[#e50000] font-bold text-xs transform -rotate-12 shadow-inner">
+                            +4
+                        </div>
+                    </a>
+
+                </div>
+            </section>
+        </main>
+
+        <div class="absolute bottom-6 left-6 right-6 z-20">
+            <div class="bg-gray-900 rounded-2xl shadow-2xl p-2 flex justify-between items-center">
+                
+                <button onclick="callWaiter()" class="flex-1 flex flex-col items-center justify-center py-2 text-gray-400 hover:text-white transition group relative">
+                    <svg class="w-6 h-6 mb-1 group-active:scale-90 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                    <span class="text-[10px] font-semibold">Llamar</span>
+                </button>
+
+                <div class="relative -top-6">
+                    <button class="bg-blue-600 text-white w-16 h-16 rounded-full shadow-[0_10px_25px_-5px_rgba(37,99,235,0.5)] flex flex-col items-center justify-center border-4 border-white transform active:scale-95 transition">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    </button>
+                    <span class="absolute -bottom-5 left-1/2 transform -translate-x-1/2 text-[10px] font-bold text-gray-900 whitespace-nowrap">Ordenar Más</span>
+                </div>
+
+                <button onclick="requestBill()" class="flex-1 flex flex-col items-center justify-center py-2 text-gray-400 hover:text-white transition group">
+                    <svg class="w-6 h-6 mb-1 group-active:scale-90 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    <span class="text-[10px] font-semibold">Pagar</span>
+                </button>
+
+            </div>
+        </div>
+
+        <div id="iframe-game-modal" class="absolute inset-0 bg-black z-[100] flex flex-col transition-transform transform translate-y-full duration-300">
+            
+            <div class="h-14 bg-gray-950 flex justify-between items-center px-4 shrink-0 border-b border-gray-800 shadow-md">
+                <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></span>
+                    <span class="text-white font-bold text-xs uppercase tracking-wider" style="font-family: monospace;">Modo Arcade</span>
+                </div>
+                
+                <button onclick="closeExternalGame()" class="flex items-center gap-1 text-gray-300 hover:text-white bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded-lg text-xs font-bold transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    Cerrar Juego
+                </button>
+            </div>
+
+            <div class="flex-1 w-full bg-black relative" id="iframe-container">
+                </div>
+            
+        </div>
+
+        <div id="toast-container" class="absolute top-4 left-4 right-4 z-[110] flex flex-col gap-2 pointer-events-none"></div>
+
+    </div>
+
+    <script>
+        // 1. Manejo del Modal de Juegos Externos (Pokelike)
+        function openExternalGame(url) {
+            const modal = document.getElementById('iframe-game-modal');
+            const container = document.getElementById('iframe-container');
+            
+            // Inyectar el iFrame dinámicamente para que no consuma memoria/red hasta que se presione
+            container.innerHTML = `
+                <div class="absolute inset-0 flex items-center justify-center z-0">
+                    <span class="text-gray-600 font-bold text-xs animate-pulse" style="font-family: monospace;">CARGANDO CARTUCHO...</span>
+                </div>
+                <iframe src="${url}" class="absolute inset-0 w-full h-full border-none z-10" allowfullscreen></iframe>
+            `;
+            
+            // Subir el modal
+            modal.classList.remove('translate-y-full');
+        }
+
+        function closeExternalGame() {
+            const modal = document.getElementById('iframe-game-modal');
+            const container = document.getElementById('iframe-container');
+            
+            // Bajar el modal
+            modal.classList.add('translate-y-full');
+            
+            // Vaciar el iframe después de la animación para detener la música y procesos del juego
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 300);
+        }
+
+        // 2. Funciones de Notificaciones
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            const bgColors = type === 'success' ? 'bg-gray-900 text-white' : 'bg-red-600 text-white';
+            const icon = type === 'success' 
+                ? `<svg class="w-5 h-5 mr-2 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`
+                : ``;
+
+            toast.className = `${bgColors} px-4 py-3 rounded-xl shadow-lg flex items-center text-sm font-medium toast-enter pointer-events-auto border border-gray-700`;
+            toast.innerHTML = `${icon} ${message}`;
+            
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(-10px)';
+                toast.style.transition = 'all 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // 3. Botones Flotantes
+        function callWaiter() {
+            showToast("Mesero llamado. Enseguida estará en tu mesa.");
+        }
+
+        function requestBill() {
+            showToast("La cuenta ha sido solicitada. Preparando métodos de pago...");
+        }
+    </script>
+</body>
+</html>

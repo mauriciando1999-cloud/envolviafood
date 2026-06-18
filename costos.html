@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Envolviafood | Costos e Inventario</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    </style>
+    <script src="app.js" defer></script>
+</head>
+<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
+
+    <aside class="w-64 bg-gray-900 text-white flex flex-col hidden md:flex shadow-xl z-20 border-r border-gray-800 shrink-0">
+        <div class="h-16 flex items-center justify-center border-b border-gray-800">
+            <h1 class="text-2xl font-bold tracking-widest uppercase">Envolvia<span class="text-blue-500">food</span></h1>
+        </div>
+        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto" id="sidebarMenu">
+            </nav>
+        <div class="p-4 border-t border-gray-800 bg-gray-900">
+            <div class="flex items-center">
+                <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-sm font-bold shadow-inner">RT</div>
+                <div class="ml-3 truncate">
+                    <p class="text-sm font-medium text-white truncate">Restaurante Test</p>
+                    <a href="index.html" class="text-xs text-gray-400 hover:text-blue-400 transition">Configuración</a>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-screen overflow-hidden relative" id="costos-container">
+        
+        <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 shrink-0 shadow-sm z-10">
+            <h2 class="text-lg font-bold text-gray-800 flex items-center">
+                <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                Ingeniería de Menú e Inventario
+            </h2>
+            <div class="flex gap-3">
+                <button class="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-lg text-sm font-bold shadow-sm transition">
+                    + Insumo
+                </button>
+                <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm transition">
+                    + Nueva Receta
+                </button>
+            </div>
+        </header>
+
+        <div class="flex-1 flex overflow-hidden">
+            
+            <div class="flex-1 overflow-y-auto p-6 bg-gray-50 flex flex-col gap-6">
+                
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+                        <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Valor en Inventario</p>
+                        <h3 class="text-2xl font-black text-gray-900">$4,250.00</h3>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm relative overflow-hidden">
+                        <div class="absolute right-0 top-0 bottom-0 w-2 bg-green-500"></div>
+                        <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Food Cost Promedio</p>
+                        <h3 class="text-2xl font-black text-gray-900">28.5%</h3>
+                        <p class="text-[10px] text-green-600 font-semibold mt-1">Saludable (Ideal: < 33%)</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+                        <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Platos en Menú</p>
+                        <h3 class="text-2xl font-black text-gray-900">24</h3>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex-1 flex flex-col">
+                    <div class="p-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                        <h3 class="font-bold text-gray-800">Repositorio de Recetas</h3>
+                        <div class="relative">
+                            <input type="text" placeholder="Buscar plato..." class="pl-8 pr-4 py-1.5 text-sm border border-gray-300 rounded-lg outline-none focus:border-blue-500">
+                            <svg class="w-4 h-4 absolute left-2.5 top-2.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto flex-1">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-white text-gray-500 font-bold uppercase text-xs sticky top-0 border-b border-gray-200 shadow-sm">
+                                <tr>
+                                    <th class="px-4 py-3">Plato</th>
+                                    <th class="px-4 py-3 text-right">Costo Real</th>
+                                    <th class="px-4 py-3 text-right">Precio Venta</th>
+                                    <th class="px-4 py-3 text-center">Rentabilidad (FC%)</th>
+                                    <th class="px-4 py-3 text-center">Estado Menú</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100" id="recipes-list">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="recipe-panel" class="w-full max-w-md bg-white border-l border-gray-200 shadow-2xl flex flex-col transform translate-x-full transition-transform duration-300 z-20 absolute right-0 top-0 bottom-0 md:relative md:translate-x-0 hidden">
+                
+                <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-900 text-white">
+                    <div>
+                        <span class="text-xs text-gray-400 font-bold uppercase tracking-wider">Editor de Receta</span>
+                        <h3 class="text-xl font-black" id="recipe-title">Hamburguesa Clásica</h3>
+                    </div>
+                    <button id="btn-close-recipe" class="text-gray-400 hover:text-white transition">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+
+                <div class="flex-1 overflow-y-auto bg-gray-50">
+                    
+                    <div class="p-5 bg-white mb-2 shadow-sm">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="font-bold text-gray-800">Fórmula de Costos</h4>
+                            <span class="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded">PRO</span>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                                <p class="text-[10px] text-gray-500 font-bold uppercase">Costo Total Ingredientes</p>
+                                <p class="text-xl font-black text-gray-900" id="panel-cost">$0.00</p>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                                <p class="text-[10px] text-gray-500 font-bold uppercase">Target Food Cost</p>
+                                <div class="flex items-center gap-1 mt-1">
+                                    <input type="number" id="target-fc" value="30" class="w-12 text-lg font-black text-blue-600 bg-transparent border-b border-gray-300 outline-none text-center focus:border-blue-600">
+                                    <span class="text-lg font-black text-blue-600">%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl flex justify-between items-center">
+                            <div>
+                                <p class="text-xs text-emerald-800 font-bold uppercase">Precio de Venta Sugerido</p>
+                                <p class="text-[10px] text-emerald-600 leading-tight">Basado en tu fórmula</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-2xl font-black text-emerald-700" id="panel-suggested-price">$0.00</p>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
+                            <label class="text-sm font-bold text-gray-700">Precio de Venta Final:</label>
+                            <div class="flex items-center">
+                                <span class="text-gray-500 mr-1 font-bold">$</span>
+                                <input type="number" id="actual-price" class="w-20 border border-gray-300 rounded px-2 py-1 text-right font-bold outline-none focus:border-blue-500">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-5 bg-white shadow-sm min-h-full">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="font-bold text-gray-800">Composición (Escandallo)</h4>
+                            <button class="text-blue-600 hover:text-blue-800 text-xs font-bold">+ Insumo</button>
+                        </div>
+                        
+                        <ul class="space-y-3" id="recipe-ingredients">
+                            </ul>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-white border-t border-gray-200 space-y-3">
+                    <label class="flex items-center justify-between cursor-pointer bg-gray-50 p-3 rounded-lg border border-gray-200">
+                        <span class="text-sm font-bold text-gray-800">Activo en el Menú General</span>
+                        <div class="relative">
+                            <input type="checkbox" id="toggle-menu" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </div>
+                    </label>
+                    <button class="w-full bg-gray-900 hover:bg-black text-white font-bold py-3 rounded-xl transition shadow-md">
+                        Guardar Receta
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</body>
+</html>

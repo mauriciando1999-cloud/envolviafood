@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0, user-scalable=no">
+    <title>Envolviafood | La Vieja</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        ::-webkit-scrollbar { display: none; }
+        
+        /* Animación al marcar una casilla */
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            70% { transform: scale(1.2); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .pop-anim {
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* Brillo para la línea ganadora */
+        .winner-cell {
+            background-color: rgba(34, 197, 94, 0.2) !important;
+            border-color: rgba(34, 197, 94, 0.5) !important;
+            box-shadow: inset 0 0 15px rgba(34, 197, 94, 0.3);
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-950 h-screen flex flex-col overflow-hidden text-white selection:bg-transparent">
+
+    <div class="w-full max-w-md mx-auto bg-gray-900 h-full flex flex-col relative shadow-2xl border-x border-gray-800">
+        
+        <!-- Header -->
+        <header class="p-4 flex justify-between items-center z-20 bg-gray-950/80 backdrop-blur-md border-b border-gray-800">
+            <a href="qr_mesa.html" class="text-gray-400 hover:text-white transition p-2 rounded-full hover:bg-gray-800">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            </a>
+            <div class="flex flex-col items-center">
+                <h1 class="text-2xl font-black tracking-widest text-white uppercase">La Vieja</h1>
+                <span class="text-[10px] text-gray-400 font-semibold tracking-widest">Torneo de Mesa</span>
+            </div>
+            <div class="text-xs font-bold text-gray-900 bg-white px-3 py-1 rounded-full shadow-[0_0_10px_rgba(255,255,255,0.3)]">
+                Mesa 4
+            </div>
+        </header>
+
+        <!-- Marcador -->
+        <div class="px-6 py-6 flex justify-between items-center bg-gray-900 shadow-inner">
+            <div class="flex flex-col items-center bg-gray-800/50 p-3 rounded-2xl border border-blue-500/30 min-w-[80px]">
+                <span class="text-3xl mb-1">❌</span>
+                <span class="text-xs text-gray-400 font-semibold uppercase">Jugador 1</span>
+                <span id="scoreX" class="text-2xl font-black text-blue-400">0</span>
+            </div>
+            
+            <div class="text-gray-500 font-black text-xl italic">VS</div>
+            
+            <div class="flex flex-col items-center bg-gray-800/50 p-3 rounded-2xl border border-red-500/30 min-w-[80px]">
+                <span class="text-3xl mb-1">⭕</span>
+                <span class="text-xs text-gray-400 font-semibold uppercase">Jugador 2</span>
+                <span id="scoreO" class="text-2xl font-black text-red-400">0</span>
+            </div>
+        </div>
+
+        <!-- Estado del Turno -->
+        <div class="text-center py-2">
+            <span id="status-text" class="text-sm font-bold tracking-widest uppercase bg-gray-800 px-4 py-2 rounded-full text-blue-400 shadow-md transition-colors">
+                Turno de ❌
+            </span>
+        </div>
+
+        <!-- Tablero de Juego -->
+        <main class="flex-1 flex items-center justify-center p-6">
+            <div class="grid grid-cols-3 gap-3 w-full max-w-[320px] aspect-square">
+                <!-- Celdas generadas por HTML -->
+                <button onclick="makeMove(0)" id="cell-0" class="game-cell bg-gray-800 border-2 border-gray-700 rounded-2xl text-5xl flex items-center justify-center shadow-lg active:scale-95 transition-transform"></button>
+                <button onclick="makeMove(1)" id="cell-1" class="game-cell bg-gray-800 border-2 border-gray-700 rounded-2xl text-5xl flex items-center justify-center shadow-lg active:scale-95 transition-transform"></button>
+                <button onclick="makeMove(2)" id="cell-2" class="game-cell bg-gray-800 border-2 border-gray-700 rounded-2xl text-5xl flex items-center justify-center shadow-lg active:scale-95 transition-transform"></button>
+                <button onclick="makeMove(3)" id="cell-3" class="game-cell bg-gray-800 border-2 border-gray-700 rounded-2xl text-5xl flex items-center justify-center shadow-lg active:scale-95 transition-transform"></button>
+                <button onclick="makeMove(4)" id="cell-4" class="game-cell bg-gray-800 border-2 border-gray-700 rounded-2xl text-5xl flex items-center justify-center shadow-lg active:scale-95 transition-transform"></button>
+                <button onclick="makeMove(5)" id="cell-5" class="game-cell bg-gray-800 border-2 border-gray-700 rounded-2xl text-5xl flex items-center justify-center shadow-lg active:scale-95 transition-transform"></button>
+                <button onclick="makeMove(6)" id="cell-6" class="game-cell bg-gray-800 border-2 border-gray-700 rounded-2xl text-5xl flex items-center justify-center shadow-lg active:scale-95 transition-transform"></button>
+                <button onclick="makeMove(7)" id="cell-7" class="game-cell bg-gray-800 border-2 border-gray-700 rounded-2xl text-5xl flex items-center justify-center shadow-lg active:scale-95 transition-transform"></button>
+                <button onclick="makeMove(8)" id="cell-8" class="game-cell bg-gray-800 border-2 border-gray-700 rounded-2xl text-5xl flex items-center justify-center shadow-lg active:scale-95 transition-transform"></button>
+            </div>
+        </main>
+
+        <!-- Controles Inferiores -->
+        <footer class="p-6 pb-8">
+            <button onclick="resetGame()" id="btn-reset" class="w-full bg-white text-gray-900 hover:bg-gray-200 font-black italic tracking-widest py-4 rounded-xl shadow-[0_0_20px_rgba(255,255,255,0.2)] active:scale-95 transition flex justify-center items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                REINICIAR PARTIDA
+            </button>
+        </footer>
+
+        <!-- Animación de Confeti Dinámica (Insertada via JS si hay victoria) -->
+        <div id="confetti-container" class="absolute inset-0 pointer-events-none overflow-hidden z-50"></div>
+    </div>
+
+    <!-- Lógica del Juego -->
+    <script>
+        // Variables de estado
+        let board = ["", "", "", "", "", "", "", "", ""];
+        let currentPlayer = "X";
+        let gameActive = true;
+        let scores = { X: 0, O: 0 };
+
+        // Combinaciones ganadoras
+        const winningConditions = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8], // Filas
+            [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columnas
+            [0, 4, 8], [2, 4, 6]             // Diagonales
+        ];
+
+        const statusText = document.getElementById('status-text');
+
+        function makeMove(cellIndex) {
+            // Verificar si la celda ya está ocupada o si el juego terminó
+            if (board[cellIndex] !== "" || !gameActive) return;
+
+            // Actualizar lógica
+            board[cellIndex] = currentPlayer;
+            
+            // Actualizar UI
+            const cell = document.getElementById(`cell-${cellIndex}`);
+            cell.innerHTML = `<span class="pop-anim drop-shadow-lg">${currentPlayer === "X" ? "❌" : "⭕"}</span>`;
+            
+            checkResult();
+        }
+
+        function checkResult() {
+            let roundWon = false;
+            let winningCells = [];
+
+            // Comprobar si hay victoria
+            for (let i = 0; i < winningConditions.length; i++) {
+                const [a, b, c] = winningConditions[i];
+                if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+                    roundWon = true;
+                    winningCells = [a, b, c];
+                    break;
+                }
+            }
+
+            if (roundWon) {
+                gameActive = false;
+                scores[currentPlayer]++;
+                document.getElementById(`score${currentPlayer}`).innerText = scores[currentPlayer];
+                
+                // Efectos visuales de victoria
+                statusText.innerHTML = `¡JUGADOR ${currentPlayer === "X" ? "1 (❌)" : "2 (⭕)"} GANA!`;
+                statusText.className = "text-sm font-bold tracking-widest uppercase bg-green-500/20 px-4 py-2 rounded-full text-green-400 shadow-md border border-green-500/50";
+                
+                // Resaltar celdas ganadoras
+                winningCells.forEach(index => {
+                    document.getElementById(`cell-${index}`).classList.add('winner-cell');
+                });
+                return;
+            }
+
+            // Comprobar si hay empate (tablero lleno sin ganador)
+            if (!board.includes("")) {
+                gameActive = false;
+                statusText.innerHTML = "¡EMPATE!";
+                statusText.className = "text-sm font-bold tracking-widest uppercase bg-gray-700 px-4 py-2 rounded-full text-white shadow-md";
+                return;
+            }
+
+            // Cambiar turno si el juego sigue
+            currentPlayer = currentPlayer === "X" ? "O" : "X";
+            updateStatusUI();
+        }
+
+        function updateStatusUI() {
+            statusText.innerHTML = `Turno de ${currentPlayer === "X" ? "❌" : "⭕"}`;
+            statusText.className = `text-sm font-bold tracking-widest uppercase px-4 py-2 rounded-full shadow-md transition-colors ${
+                currentPlayer === "X" 
+                ? "bg-gray-800 text-blue-400" 
+                : "bg-gray-800 text-red-400"
+            }`;
+        }
+
+        function resetGame() {
+            board = ["", "", "", "", "", "", "", "", ""];
+            gameActive = true;
+            currentPlayer = "X";
+            
+            // Limpiar UI de celdas
+            document.querySelectorAll('.game-cell').forEach(cell => {
+                cell.innerHTML = "";
+                cell.classList.remove('winner-cell');
+            });
+
+            updateStatusUI();
+        }
+
+        // Inicializar el estado de la UI al cargar
+        updateStatusUI();
+    </script>
+</body>
+</html>
