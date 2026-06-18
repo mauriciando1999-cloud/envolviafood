@@ -1,38 +1,17 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js" defer></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, maximum-scale=1.0, user-scalable=no">
-    <title>Envolviafood | Poker Texas Hold'em</title>
+    <title>Envolviafood | Poker</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         ::-webkit-scrollbar { display: none; }
-        
-        /* Textura del tapete de casino */
-        .casino-felt {
-            background-color: #064e3b;
-            background-image: radial-gradient(circle, #065f46 0%, #022c22 100%);
-            box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
-        }
-
-        /* Animación para repartir cartas */
-        @keyframes dealCard {
-            0% { transform: translateY(-200px) scale(0.5) rotate(-180deg); opacity: 0; }
-            100% { transform: translateY(0) scale(1) rotate(var(--rotation, 0deg)); opacity: 1; }
-        }
-        .deal-anim {
-            animation: dealCard 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
-
-        /* Animación de Fichas (Chips) */
-        @keyframes tossChip {
-            0% { transform: translateY(50px) scale(0.5); opacity: 0; }
-            50% { transform: translateY(-10px) scale(1.1); opacity: 1; }
-            100% { transform: translateY(0) scale(1); opacity: 1; }
-        }
-        .chip-toss { animation: tossChip 0.4s ease-out forwards; }
+        .casino-felt { background-color: #064e3b; background-image: radial-gradient(circle, #065f46 0%, #022c22 100%); }
     </style>
 </head>
 <body class="bg-gray-950 h-screen flex flex-col overflow-hidden text-white selection:bg-transparent">
@@ -43,291 +22,72 @@
             <a href="qr_mesa.html" class="text-gray-400 hover:text-white transition p-2 rounded-full hover:bg-gray-800">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
             </a>
-            <div class="flex flex-col items-center">
-                <h1 class="text-xl font-black tracking-widest text-yellow-500 uppercase">Texas Hold'em</h1>
-                <span class="text-[10px] text-gray-400 font-semibold tracking-widest">Apuesta Comida</span>
-            </div>
-            <div class="text-xs font-bold text-gray-900 bg-yellow-500 px-3 py-1 rounded-full shadow-[0_0_10px_rgba(234,179,8,0.5)]">
-                Mesa 4
-            </div>
+            <h1 class="text-xl font-black tracking-widest text-yellow-500 uppercase">Texas Hold'em</h1>
+            <div class="text-xs font-bold text-gray-900 bg-yellow-500 px-3 py-1 rounded-full">Mesa 4</div>
         </header>
 
-        <main class="flex-1 relative flex flex-col items-center justify-between p-4 casino-felt rounded-3xl m-2 border-4 border-amber-900/50 shadow-inner overflow-hidden">
-            
-            <div class="w-full flex justify-between px-4 mt-2">
-                <div class="flex flex-col items-center opacity-70">
-                    <div class="w-10 h-10 bg-gray-800 rounded-full border-2 border-gray-500 flex items-center justify-center text-xs font-bold mb-1">J1</div>
-                    <span class="text-[10px] bg-black/50 px-2 py-0.5 rounded-full text-yellow-400">$15.00</span>
-                    <div class="flex -space-x-4 mt-1 transform scale-50 -translate-y-4">
-                        <div class="w-12 h-16 bg-blue-900 rounded border border-white"></div>
-                        <div class="w-12 h-16 bg-blue-900 rounded border border-white"></div>
-                    </div>
-                </div>
-                <div class="flex flex-col items-center opacity-70">
-                    <div class="w-10 h-10 bg-gray-800 rounded-full border-2 border-yellow-500 flex items-center justify-center text-xs font-bold mb-1 shadow-[0_0_10px_rgba(234,179,8,0.5)]">J2</div>
-                    <span class="text-[10px] bg-black/50 px-2 py-0.5 rounded-full text-yellow-400">$22.50</span>
-                    <div class="flex -space-x-4 mt-1 transform scale-50 -translate-y-4">
-                        <div class="w-12 h-16 bg-blue-900 rounded border border-white"></div>
-                        <div class="w-12 h-16 bg-blue-900 rounded border border-white"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex flex-col items-center w-full relative z-10 -mt-10">
+        <main class="flex-1 relative flex flex-col items-center justify-between p-4 casino-felt rounded-3xl m-2 border-4 border-amber-900/50 shadow-inner">
+            <div class="flex flex-col items-center w-full relative z-10 mt-10">
                 <div class="mb-4 flex flex-col items-center">
-                    <span class="text-[10px] uppercase tracking-widest text-emerald-200 font-semibold mb-1">Bote Total</span>
-                    <div class="bg-black/60 border border-emerald-700/50 px-6 py-2 rounded-full flex items-center gap-2 backdrop-blur-sm">
-                        <div class="w-4 h-4 rounded-full border-2 border-dashed border-yellow-600 bg-yellow-400 flex items-center justify-center"></div>
-                        <span id="pot-amount" class="font-black text-xl text-yellow-400">$0.00</span>
-                    </div>
+                    <span class="text-[10px] uppercase tracking-widest text-emerald-200">Bote Total</span>
+                    <span id="pot-amount" class="font-black text-xl text-yellow-400 bg-black/60 px-4 py-1 rounded-full">$0.00</span>
                 </div>
-
-                <div id="community-cards" class="flex gap-1 h-24 justify-center items-center w-full px-2">
-                    </div>
+                <div id="community-cards" class="flex gap-1 h-24 justify-center items-center w-full px-2"></div>
             </div>
-
-            <div id="chips-area" class="absolute bottom-32 left-1/2 transform -translate-x-1/2 flex items-center justify-center pointer-events-none z-20"></div>
-
         </main>
 
-        <footer class="bg-gray-950 border-t border-gray-800 rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.5)] relative z-30 pt-2 pb-6 px-4">
-            
+        <footer class="bg-gray-950 border-t border-gray-800 rounded-t-3xl pt-2 pb-6 px-4">
             <div class="flex justify-between items-end mb-4 px-2">
                 <div>
                     <p class="text-xs text-gray-500 font-semibold uppercase">Tu Saldo</p>
                     <p class="text-xl font-black text-yellow-500" id="player-balance">$50.00</p>
                 </div>
-                <div class="text-right">
-                    <p class="text-[10px] text-gray-500 font-semibold uppercase" id="game-status">Esperando tu acción...</p>
-                </div>
+                <p class="text-[10px] text-gray-500 font-semibold uppercase" id="game-status">Esperando tu acción...</p>
             </div>
 
-            <div id="player-hand" class="flex justify-center -space-x-4 mb-6 relative">
-                </div>
+            <div id="player-hand" class="flex justify-center -space-x-4 mb-6 relative"></div>
 
             <div class="grid grid-cols-3 gap-3">
-                <button onclick="fold()" class="bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold py-3 rounded-xl border border-gray-700 shadow-sm active:scale-95 transition flex flex-col items-center justify-center">
-                    <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                    <span class="text-xs uppercase">No Ir (Fold)</span>
-                </button>
-                
-                <button onclick="checkOrCall()" id="btn-call" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl shadow-[0_0_15px_rgba(37,99,235,0.4)] active:scale-95 transition flex flex-col items-center justify-center">
-                    <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                    <span class="text-xs uppercase" id="lbl-call">Check / Igualar</span>
-                </button>
-
-                <button onclick="raise()" id="btn-raise" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl shadow-[0_0_15px_rgba(5,150,105,0.4)] active:scale-95 transition flex flex-col items-center justify-center relative overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-t from-emerald-800/50 to-transparent"></div>
-                    <svg class="w-5 h-5 mb-1 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                    <span class="text-xs uppercase relative z-10">Subir $2</span>
-                </button>
+                <button onclick="advanceStage()" class="bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold py-3 rounded-xl border border-gray-700 shadow-sm text-xs uppercase">No Ir</button>
+                <button onclick="checkOrCall()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl text-xs uppercase" id="lbl-call">Igualar</button>
+                <button onclick="raise()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl text-xs uppercase">Subir</button>
             </div>
         </footer>
-
-        <div id="game-toast" class="absolute top-20 left-1/2 transform -translate-x-1/2 bg-gray-900/90 backdrop-blur text-white px-6 py-3 rounded-full text-sm font-bold shadow-2xl border border-gray-700 transition-all duration-300 opacity-0 pointer-events-none z-50 whitespace-nowrap">
-            Mensaje
-        </div>
     </div>
 
     <script>
-        const suits = [
-            { name: 'hearts', icon: '♥', color: 'text-red-600' },
-            { name: 'diamonds', icon: '♦', color: 'text-red-600' },
-            { name: 'clubs', icon: '♣', color: 'text-gray-900' },
-            { name: 'spades', icon: '♠', color: 'text-gray-900' }
-        ];
-        const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+        const suits = [{icon: '♥', color: 'text-red-600'}, {icon: '♣', color: 'text-gray-900'}];
+        let playerHand = [], communityCards = [], stage = 0, pot = 0, balance = 50.00;
 
-        // Estado del MVP
-        let deck = [];
-        let playerHand = [];
-        let communityCards = [];
-        let stage = 0; // 0: Pre-flop, 1: Flop, 2: Turn, 3: River, 4: Showdown
-        let pot = 0;
-        let playerBalance = 50.00;
-        let currentBet = 2.00; // Apuesta mínima simulada
-
-        function buildDeck() {
-            deck = [];
-            suits.forEach(suit => {
-                values.forEach(value => {
-                    deck.push({ suit, value });
-                });
-            });
-            // Mezclar
-            for (let i = deck.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [deck[i], deck[j]] = [deck[j], deck[i]];
-            }
-        }
-
-        // Genera el HTML de una carta. hidden = si se muestra el dorso
-        function createCardHTML(card, hidden = false, rotation = 0) {
-            const rotClass = `style="--rotation: ${rotation}deg; transform: rotate(${rotation}deg);"`;
-            
-            if (hidden) {
-                return `
-                    <div class="w-[60px] h-[85px] sm:w-[70px] sm:h-[100px] bg-blue-900 rounded-lg border-[3px] border-white shadow-xl flex-shrink-0 deal-anim relative overflow-hidden flex items-center justify-center" ${rotClass}>
-                        <div class="absolute inset-1 border-2 border-dashed border-blue-400/50 rounded flex items-center justify-center">
-                            <span class="text-blue-400/30 font-black italic text-xl transform -rotate-45">E</span>
-                        </div>
-                    </div>
-                `;
-            }
-
-            return `
-                <div class="w-[60px] h-[85px] sm:w-[70px] sm:h-[100px] bg-white rounded-lg border border-gray-300 shadow-xl flex-shrink-0 deal-anim flex flex-col justify-between p-1 relative" ${rotClass}>
-                    <div class="text-xs sm:text-sm font-bold ${card.suit.color} leading-none">${card.value}</div>
-                    <div class="absolute inset-0 flex items-center justify-center">
-                        <span class="text-3xl sm:text-4xl ${card.suit.color} opacity-80">${card.suit.icon}</span>
-                    </div>
-                    <div class="text-xs sm:text-sm font-bold ${card.suit.color} leading-none text-right transform rotate-180">${card.value}</div>
-                </div>
-            `;
-        }
-
-        function showMsg(text) {
-            const toast = document.getElementById('game-toast');
-            toast.innerText = text;
-            toast.classList.remove('opacity-0', '-translate-y-4');
-            setTimeout(() => {
-                toast.classList.add('opacity-0', '-translate-y-4');
-            }, 2500);
+        function createCardHTML(card) {
+            return `<div class="w-[60px] h-[85px] bg-white rounded-lg border border-gray-300 shadow-xl flex flex-col justify-between p-1">
+                        <div class="text-xs font-bold ${card.suit.color}">${card.value}</div>
+                        <div class="text-3xl ${card.suit.color} self-center">${card.suit.icon}</div>
+                    </div>`;
         }
 
         function updateUI() {
             document.getElementById('pot-amount').innerText = `$${pot.toFixed(2)}`;
-            document.getElementById('player-balance').innerText = `$${playerBalance.toFixed(2)}`;
-            
-            const btnCall = document.getElementById('lbl-call');
-            const btnRaise = document.getElementById('btn-raise');
-            
-            if (stage === 4) {
-                btnCall.innerText = "Nueva Mano";
-                btnRaise.style.opacity = '0.5';
-                btnRaise.pointerEvents = 'none';
-            } else {
-                btnCall.innerText = "Check / Igualar";
-                btnRaise.style.opacity = '1';
-                btnRaise.pointerEvents = 'auto';
-            }
+            document.getElementById('player-balance').innerText = `$${balance.toFixed(2)}`;
         }
 
-        function tossChipAnimation() {
-            const area = document.getElementById('chips-area');
-            const chip = document.createElement('div');
-            chip.className = 'w-8 h-8 rounded-full border-4 border-dashed border-yellow-600 bg-yellow-400 absolute chip-toss shadow-lg';
-            chip.style.left = `${Math.random() * 40 - 20}px`;
-            area.appendChild(chip);
-            setTimeout(() => chip.remove(), 1000);
-        }
-
-        function startHand() {
-            buildDeck();
-            playerHand = [deck.pop(), deck.pop()];
-            communityCards = [deck.pop(), deck.pop(), deck.pop(), deck.pop(), deck.pop()];
-            
-            stage = 0;
-            pot = 4.00; // Ciegas iniciales (simuladas entre oponentes)
-            
-            // Renderizar mano del jugador
-            const handContainer = document.getElementById('player-hand');
-            handContainer.innerHTML = createCardHTML(playerHand[0], false, -5) + createCardHTML(playerHand[1], false, 5);
-
-            // Limpiar mesa
-            document.getElementById('community-cards').innerHTML = '';
-            document.getElementById('game-status').innerText = "Pre-Flop: ¿Ir o No Ir?";
-            
-            updateUI();
-            showMsg("Nueva mano iniciada");
-        }
-
-        function renderCommunityCards(count) {
-            const container = document.getElementById('community-cards');
-            container.innerHTML = '';
-            for(let i=0; i<5; i++) {
-                if (i < count) {
-                    // Revelada
-                    container.innerHTML += createCardHTML(communityCards[i]);
-                } else {
-                    // Oculta (Placeholder visual sutil o nada)
-                    container.innerHTML += `<div class="w-[60px] h-[85px] sm:w-[70px] sm:h-[100px] border-2 border-emerald-700/30 rounded-lg flex-shrink-0"></div>`;
-                }
-            }
-        }
-
-        // ACCIONES
-        function checkOrCall() {
-            if (stage === 4) {
-                startHand();
-                return;
-            }
-
-            // Simulamos que el jugador y los bots igualan (pot crece)
-            pot += currentBet * 3; 
-            if (playerBalance >= currentBet) playerBalance -= currentBet;
-            tossChipAnimation();
-
-            advanceStage();
-        }
-
-        function raise() {
-            if (stage === 4) return;
-            if (playerBalance < (currentBet + 2)) {
-                showMsg("Saldo insuficiente para subir.");
-                return;
-            }
-            
-            currentBet += 2.00;
-            pot += currentBet * 3; // Simula que todos igualan la subida
-            playerBalance -= currentBet;
-            tossChipAnimation();
-            
-            showMsg(`Has subido a $${currentBet.toFixed(2)}`);
-            setTimeout(advanceStage, 800);
-        }
-
-        function fold() {
-            showMsg("Te has retirado de la mano.");
-            setTimeout(startHand, 1500);
-        }
+        function checkOrCall() { pot += 6; balance -= 2; advanceStage(); }
+        function raise() { pot += 12; balance -= 4; advanceStage(); }
 
         function advanceStage() {
             stage++;
-            const statusEl = document.getElementById('game-status');
-
-            if (stage === 1) { // FLOP
-                statusEl.innerText = "El Flop";
-                renderCommunityCards(3);
-                showMsg("Se descubre el Flop");
-            } 
-            else if (stage === 2) { // TURN
-                statusEl.innerText = "El Turn";
-                renderCommunityCards(4);
-                showMsg("Viene el Turn");
-            } 
-            else if (stage === 3) { // RIVER
-                statusEl.innerText = "El River";
-                renderCommunityCards(5);
-                showMsg("Última carta: El River");
-            } 
-            else if (stage === 4) { // SHOWDOWN
-                statusEl.innerText = "Showdown - Fin de la Mano";
-                
-                // Lógica dummy de ganar/perder para el prototipo
-                const playerWins = Math.random() > 0.5;
-                if(playerWins) {
-                    playerBalance += pot;
-                    showMsg(`¡Has ganado el bote de $${pot.toFixed(2)}!`);
-                } else {
-                    showMsg("Oponente gana la mano con Doble Pareja.");
-                }
-            }
+            const cc = document.getElementById('community-cards');
+            if (stage === 1) cc.innerHTML = createCardHTML({suit: suits[0], value: 'A'}) + createCardHTML({suit: suits[1], value: 'K'}) + createCardHTML({suit: suits[0], value: '10'});
+            else if (stage === 2) cc.innerHTML += createCardHTML({suit: suits[1], value: '5'});
+            else if (stage === 3) cc.innerHTML += createCardHTML({suit: suits[0], value: 'J'});
+            else if (stage === 4) { stage = 0; pot = 0; cc.innerHTML = ''; alert("Mano terminada"); }
             updateUI();
         }
 
-        // Iniciar juego al cargar
-        window.onload = startHand;
+        window.onload = () => {
+            document.getElementById('player-hand').innerHTML = createCardHTML({suit: suits[0], value: 'A'}) + createCardHTML({suit: suits[0], value: 'K'});
+            pot = 4; updateUI();
+        };
     </script>
 </body>
 </html>

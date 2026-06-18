@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js" defer></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, maximum-scale=1.0, user-scalable=no">
     <title>Envolviafood | UNO</title>
@@ -9,268 +11,100 @@
     <style>
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         ::-webkit-scrollbar { display: none; }
-        
-        /* Efecto de solapamiento en la mano del jugador */
-        .hand-container {
-            display: flex;
-            overflow-x: auto;
-            padding: 1rem;
-            margin-left: 10px;
-        }
-        .card-in-hand {
-            margin-left: -30px; /* Solapa las cartas */
-            transition: transform 0.2s, margin 0.2s;
-        }
+        .hand-container { display: flex; overflow-x: auto; padding: 1rem; margin-left: 10px; }
+        .card-in-hand { margin-left: -30px; transition: transform 0.2s, margin 0.2s; }
         .card-in-hand:first-child { margin-left: 0; }
-        .card-in-hand:hover, .card-in-hand:active {
-            transform: translateY(-15px) rotate(-2deg);
-            margin-right: 15px;
-            z-index: 50;
-        }
-
-        /* Animación para carta jugada */
-        @keyframes playCard {
-            0% { transform: scale(1.2) translateY(50px); opacity: 0; }
-            100% { transform: scale(1) translateY(0) rotate(var(--rotation)); opacity: 1; }
-        }
-        .played-anim {
-            animation: playCard 0.3s ease-out forwards;
-        }
+        .card-in-hand:hover { transform: translateY(-15px) rotate(-2deg); margin-right: 15px; z-index: 50; }
+        @keyframes playCard { 0% { transform: scale(1.2) translateY(50px); opacity: 0; } 100% { transform: scale(1) translateY(0) rotate(var(--rotation)); opacity: 1; } }
+        .played-anim { animation: playCard 0.3s ease-out forwards; }
     </style>
 </head>
 <body class="bg-gray-900 h-screen flex flex-col overflow-hidden text-white selection:bg-transparent">
 
     <div class="w-full max-w-md mx-auto bg-gray-950 h-full flex flex-col relative shadow-2xl border-x border-gray-800">
-        
         <header class="p-4 flex justify-between items-center z-10 bg-gray-900/80 backdrop-blur-md border-b border-gray-800">
             <a href="qr_mesa.html" class="text-gray-400 hover:text-white transition p-2 rounded-full hover:bg-gray-800">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
             </a>
             <h1 class="text-2xl font-black italic tracking-tighter text-[#e50000]">UNO!</h1>
-            <div class="text-xs font-bold text-gray-400 bg-gray-800 px-3 py-1 rounded-full">
-                Mesa 4
-            </div>
+            <div class="text-xs font-bold text-gray-400 bg-gray-800 px-3 py-1 rounded-full">Mesa 4</div>
         </header>
 
         <main class="flex-1 relative flex flex-col items-center justify-center p-6 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-800 to-gray-950">
-            
             <div class="absolute top-8 flex gap-[-10px] scale-75 opacity-70 pointer-events-none">
-                <div class="w-16 h-24 bg-gray-900 border-2 border-gray-700 rounded-lg flex items-center justify-center -ml-8 first:ml-0"><span class="text-[#e50000] font-black italic text-xs transform -rotate-12">UNO</span></div>
-                <div class="w-16 h-24 bg-gray-900 border-2 border-gray-700 rounded-lg flex items-center justify-center -ml-8"><span class="text-[#e50000] font-black italic text-xs transform -rotate-12">UNO</span></div>
-                <div class="w-16 h-24 bg-gray-900 border-2 border-gray-700 rounded-lg flex items-center justify-center -ml-8"><span class="text-[#e50000] font-black italic text-xs transform -rotate-12">UNO</span></div>
+                <div class="w-16 h-24 bg-gray-900 border-2 border-gray-700 rounded-lg flex items-center justify-center"><span class="text-[#e50000] font-black italic text-xs transform -rotate-12">UNO</span></div>
             </div>
             
-            <p class="absolute top-36 text-xs text-gray-500 font-semibold uppercase tracking-widest">Oponente pensando...</p>
-
             <div class="flex items-center gap-6 mt-8">
-                
-                <button onclick="drawCard()" class="w-24 h-36 bg-gray-900 border-4 border-gray-700 rounded-xl shadow-2xl flex items-center justify-center transform active:scale-95 transition relative group">
-                    <div class="absolute inset-2 border border-gray-700 rounded-lg flex items-center justify-center">
-                        <span class="text-[#e50000] font-black italic text-xl transform -rotate-12 group-hover:scale-110 transition">UNO</span>
-                    </div>
+                <button onclick="drawCard()" class="w-24 h-36 bg-gray-900 border-4 border-gray-700 rounded-xl flex items-center justify-center transform active:scale-95 transition relative">
+                    <span class="text-[#e50000] font-black italic text-xl transform -rotate-12">UNO</span>
                 </button>
-
-                <div id="discard-pile" class="w-24 h-36 rounded-xl shadow-[0_0_30px_rgba(0,0,0,0.5)] flex items-center justify-center relative">
-                    </div>
-
+                <div id="discard-pile" class="w-24 h-36 rounded-xl flex items-center justify-center relative"></div>
             </div>
 
-            <button id="btn-gritar-uno" onclick="shoutUno()" class="absolute bottom-4 right-4 w-14 h-14 bg-[#e50000] text-white rounded-full font-black italic shadow-lg border-2 border-white transform active:scale-90 transition hidden items-center justify-center z-20">
-                UNO!
-            </button>
+            <button id="btn-gritar-uno" onclick="shoutUno()" class="absolute bottom-4 right-4 w-14 h-14 bg-[#e50000] text-white rounded-full font-black italic hidden items-center justify-center z-20">UNO!</button>
         </main>
 
         <footer class="h-48 bg-gray-900 border-t border-gray-800 relative z-20">
             <div class="p-2 flex justify-between items-center text-xs text-gray-400 font-semibold px-4 border-b border-gray-800">
-                <span>Tu turno</span>
-                <span id="card-count">7 Cartas</span>
+                <span>Tu turno</span><span id="card-count">7 Cartas</span>
             </div>
-            <div id="player-hand" class="hand-container h-full pt-4 pb-8">
-                </div>
+            <div id="player-hand" class="hand-container h-full pt-4 pb-8"></div>
         </footer>
 
-        <div id="game-toast" class="absolute top-20 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-full text-sm font-bold shadow-xl transition-all duration-300 opacity-0 pointer-events-none z-50">
-            Mensaje
-        </div>
+        <div id="game-toast" class="absolute top-20 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-full text-sm font-bold opacity-0 transition-all z-50">Mensaje</div>
     </div>
 
     <script>
-        // Configuración de visualización de colores
-        const colorStyles = {
-            'red': { bg: 'bg-[#ff5555]', text: 'text-[#ff5555]', border: 'border-[#ff5555]' },
-            'blue': { bg: 'bg-[#5555ff]', text: 'text-[#5555ff]', border: 'border-[#5555ff]' },
-            'green': { bg: 'bg-[#55aa55]', text: 'text-[#55aa55]', border: 'border-[#55aa55]' },
-            'yellow': { bg: 'bg-[#ffaa00]', text: 'text-[#ffaa00]', border: 'border-[#ffaa00]' },
-            'black': { bg: 'bg-gray-900', text: 'text-gray-900', border: 'border-gray-900' } // Wildcards
-        };
-
-        // Estado del juego
-        let deck = [];
-        let playerHand = [];
-        let discardPile = [];
+        const colorStyles = { 'red': 'bg-[#ff5555]', 'blue': 'bg-[#5555ff]', 'green': 'bg-[#55aa55]', 'yellow': 'bg-[#ffaa00]', 'black': 'bg-gray-900' };
+        let deck = [], playerHand = [], discardPile = [];
         
-        // 1. GENERAR MAZO
         function buildDeck() {
-            const colors = ['red', 'blue', 'green', 'yellow'];
-            const values = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'Ø', '⇄', '+2'];
-            const wilds = ['WILD', '+4'];
-
-            colors.forEach(color => {
-                values.forEach(value => {
-                    deck.push({ color, value, isWild: false });
-                    if(value !== '0') deck.push({ color, value, isWild: false }); // Dobles excepto el 0
-                });
+            ['red', 'blue', 'green', 'yellow'].forEach(color => {
+                ['1','2','3','4','5','6','7','8','9','⇄','+2'].forEach(value => { deck.push({ color, value, isWild: false }); });
             });
-
-            for(let i=0; i<4; i++){
-                deck.push({ color: 'black', value: 'WILD', isWild: true });
-                deck.push({ color: 'black', value: '+4', isWild: true });
-            }
-            
-            // Mezclar (Algoritmo Fisher-Yates)
-            for (let i = deck.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [deck[i], deck[j]] = [deck[j], deck[i]];
-            }
+            for(let i=0; i<4; i++) deck.push({ color: 'black', value: 'WILD', isWild: true });
+            deck.sort(() => Math.random() - 0.5);
         }
 
-        // 2. RENDERIZAR UNA CARTA HTML
         function createCardHTML(card, isDiscard = false) {
-            const style = colorStyles[card.color];
-            const isSymbol = isNaN(card.value) && card.value !== '+2' && card.value !== '+4';
-            let displayValue = card.value;
-            
-            // Tamaño dependiendo si es la pila de descarte o la mano
-            const sizeClass = isDiscard ? 'w-24 h-36' : 'w-20 h-32 card-in-hand shadow-xl cursor-pointer';
-            const ovalClass = isDiscard ? 'w-16 h-24' : 'w-12 h-20';
-            const textClass = isDiscard ? 'text-4xl' : 'text-3xl';
-            
-            // Rotación aleatoria leve para la pila de descarte
-            const rotation = isDiscard ? Math.floor(Math.random() * 20) - 10 : 0;
-            const animClass = isDiscard ? 'played-anim' : '';
-
-            return `
-                <div class="${sizeClass} ${style.bg} rounded-xl border-[3px] border-white flex flex-col items-center justify-center relative overflow-hidden flex-shrink-0 ${animClass}" style="--rotation: ${rotation}deg;">
-                    <span class="absolute top-1 left-2 text-white text-xs font-bold drop-shadow-md">${card.value}</span>
-                    <span class="absolute bottom-1 right-2 text-white text-xs font-bold drop-shadow-md transform rotate-180">${card.value}</span>
-                    
-                    <div class="bg-white rounded-[50%] ${ovalClass} flex items-center justify-center transform -rotate-12 shadow-inner">
-                        <span class="${style.text} font-black ${textClass} drop-shadow-sm tracking-tighter">${displayValue}</span>
-                    </div>
-                </div>
-            `;
+            return `<div class="${isDiscard ? 'w-24 h-36' : 'w-20 h-32 card-in-hand cursor-pointer'} ${colorStyles[card.color]} rounded-xl border-[3px] border-white flex items-center justify-center ${isDiscard?'played-anim':''}">
+                        <div class="bg-white rounded-[50%] w-12 h-20 flex items-center justify-center transform -rotate-12"><span class="text-${colorStyles[card.color].split('-')[1].replace(']','')} font-black text-2xl">${card.value}</span></div>
+                    </div>`;
         }
 
-        // 3. LÓGICA DE INTERFAZ
         function renderGame() {
-            // Render Pila de descarte
-            const currentCard = discardPile[discardPile.length - 1];
-            document.getElementById('discard-pile').innerHTML = createCardHTML(currentCard, true);
-
-            // Render Mano
-            const handContainer = document.getElementById('player-hand');
-            handContainer.innerHTML = '';
+            const top = discardPile[discardPile.length - 1];
+            document.getElementById('discard-pile').innerHTML = createCardHTML(top, true);
+            const handEl = document.getElementById('player-hand'); handEl.innerHTML = '';
             
-            playerHand.forEach((card, index) => {
-                const cardEl = document.createElement('div');
-                cardEl.innerHTML = createCardHTML(card);
-                const el = cardEl.firstElementChild;
-                
-                // Comprobar si la carta se puede jugar
-                if (isValidPlay(card, currentCard)) {
-                    el.classList.add('hover:-translate-y-4');
-                    el.onclick = () => playCard(index);
-                } else {
-                    // Carta oscurecida si no se puede jugar
-                    el.classList.add('opacity-50', 'grayscale-[50%]');
-                    el.onclick = () => showMsg("Movimiento inválido");
-                }
-                
-                handContainer.appendChild(el);
+            playerHand.forEach((card, i) => {
+                const div = document.createElement('div'); div.innerHTML = createCardHTML(card);
+                const el = div.firstElementChild;
+                if(card.color === top.color || card.value === top.value || card.isWild) {
+                    el.onclick = () => playCard(i);
+                } else el.classList.add('opacity-50');
+                handEl.appendChild(el);
             });
-
             document.getElementById('card-count').innerText = `${playerHand.length} Cartas`;
-            
-            // Mostrar botón UNO si queda 1 carta
-            document.getElementById('btn-gritar-uno').style.display = playerHand.length === 1 ? 'flex' : 'none';
         }
 
-        // 4. MECÁNICAS DE JUEGO
-        function isValidPlay(playCard, topCard) {
-            if (playCard.isWild) return true; // Comodines siempre valen
-            if (playCard.color === topCard.color) return true; // Mismo color
-            if (playCard.value === topCard.value) return true; // Mismo número/símbolo
-            return false;
-        }
-
-        function playCard(index) {
-            const card = playerHand[index];
-            playerHand.splice(index, 1); // Quitar de la mano
-            
-            // Si es comodín, elegimos color aleatorio por ahora (MVP)
-            if (card.isWild) {
-                const colors = ['red', 'blue', 'green', 'yellow'];
-                card.color = colors[Math.floor(Math.random() * colors.length)];
-                showMsg(`¡Color cambiado a ${card.color}!`);
-            }
-
-            discardPile.push(card); // Poner en la pila
-            
-            if (playerHand.length === 0) {
-                showMsg("¡GANASTE LA RONDA!");
-                setTimeout(initGame, 3000); // Reiniciar juego
-            } else {
-                renderGame();
-            }
-        }
-
-        function drawCard() {
-            if (deck.length === 0) {
-                showMsg("Mazo vacío, barajando...");
-                // Tomar todo el descarte menos la última carta y meter al mazo (Simplificado)
-                return;
-            }
-            playerHand.push(deck.pop());
+        function playCard(i) {
+            const card = playerHand.splice(i, 1)[0];
+            if(card.isWild) card.color = ['red','blue','green','yellow'][Math.floor(Math.random()*4)];
+            discardPile.push(card);
             renderGame();
         }
 
-        function shoutUno() {
-            showMsg("¡UNO!");
-            document.getElementById('btn-gritar-uno').style.display = 'none';
-        }
+        function drawCard() { playerHand.push(deck.pop()); renderGame(); }
 
-        function showMsg(text) {
-            const toast = document.getElementById('game-toast');
-            toast.innerText = text;
-            toast.classList.remove('opacity-0', '-translate-y-4');
-            setTimeout(() => {
-                toast.classList.add('opacity-0', '-translate-y-4');
-            }, 2000);
-        }
-
-        // 5. INICIALIZAR
         function initGame() {
-            deck = [];
-            playerHand = [];
-            discardPile = [];
-            
             buildDeck();
-            
-            // Repartir 7 cartas
             for(let i=0; i<7; i++) playerHand.push(deck.pop());
-            
-            // Primera carta a la pila (asegurar que no sea negra para empezar fácil)
-            let firstCard = deck.pop();
-            while(firstCard.isWild) {
-                deck.unshift(firstCard);
-                firstCard = deck.pop();
-            }
-            discardPile.push(firstCard);
-            
+            let first = deck.pop(); while(first.isWild) { deck.unshift(first); first = deck.pop(); }
+            discardPile.push(first);
             renderGame();
         }
-
-        // Arrancar juego al cargar
         window.onload = initGame;
     </script>
 </body>
