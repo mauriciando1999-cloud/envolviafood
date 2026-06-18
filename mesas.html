@@ -3,49 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Envolviafood | Gestión de Mesas</title>
+    <title>Envolviafood | Punto de Venta y Mesas</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script src="app.js" defer></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         
-        /* Estilos específicos para el plano de mesas */
         #floor-plan {
             background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
             background-size: 20px 20px;
         }
-        .restaurant-table {
-            transition: transform 0.1s;
-            user-select: none;
-        }
-        .restaurant-table.edit-mode {
-            cursor: grab;
-            border-style: dashed;
-            border-width: 2px;
-        }
-        .restaurant-table.edit-mode:active {
-            cursor: grabbing;
-            transform: scale(1.05);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        }
-        .restaurant-table.view-mode {
-            cursor: pointer;
-        }
-        .restaurant-table.view-mode:hover {
-            transform: scale(1.05);
-        }
-        /* Colores de estado */
+        .restaurant-table { transition: transform 0.1s; user-select: none; }
+        .restaurant-table.edit-mode { cursor: grab; border-style: dashed; border-width: 2px; }
+        .restaurant-table.edit-mode:active { cursor: grabbing; transform: scale(1.05); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .restaurant-table.view-mode { cursor: pointer; }
+        .restaurant-table.view-mode:hover { transform: scale(1.05); }
+        
         .status-free { border-color: #22c55e; background-color: #dcfce7; color: #166534; }
         .status-occupied { border-color: #ef4444; background-color: #fee2e2; color: #991b1b; }
         .status-waiting { border-color: #eab308; background-color: #fef9c3; color: #854d0e; }
+        
+        .hidden-view { display: none !important; }
     </style>
     
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="app.js" defer></script>
 </head>
 <body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
@@ -54,14 +38,12 @@
         <div class="h-16 flex items-center justify-center border-b border-gray-800">
             <h1 class="text-2xl font-bold tracking-widest uppercase">Envolvia<span class="text-blue-500">food</span></h1>
         </div>
-        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto" id="sidebarMenu">
-            </nav>
+        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto" id="sidebarMenu"></nav>
         <div class="p-4 border-t border-gray-800 bg-gray-900">
             <div class="flex items-center">
                 <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-sm font-bold shadow-inner">RT</div>
                 <div class="ml-3 truncate">
                     <p class="text-sm font-medium text-white truncate">Restaurante Test</p>
-                    <a href="index.html" class="text-xs text-gray-400 hover:text-blue-400 transition">Configuración</a>
                 </div>
             </div>
         </div>
@@ -70,19 +52,16 @@
     <main class="flex-1 flex flex-col h-screen overflow-hidden relative">
         
         <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 shrink-0 shadow-sm z-10">
-            <h2 class="text-lg font-bold text-gray-800 flex items-center">
-                <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
-                Control de Salón
-            </h2>
+            <div class="flex gap-4">
+                <button id="tab-mesas" class="px-4 py-2 font-bold text-sm rounded-lg bg-blue-50 text-blue-700 transition">
+                    🏠 Salón (Mesas)
+                </button>
+                <button id="tab-delivery" class="px-4 py-2 font-bold text-sm rounded-lg text-gray-500 hover:bg-gray-100 transition">
+                    🛵 Delivery / Takeaway
+                </button>
+            </div>
             
-            <div class="flex items-center gap-6">
-                <div class="hidden md:flex gap-4 text-sm font-medium">
-                    <span class="flex items-center"><div class="w-3 h-3 rounded-full bg-green-500 mr-1.5"></div> Libres: <span id="count-free" class="ml-1">0</span></span>
-                    <span class="flex items-center"><div class="w-3 h-3 rounded-full bg-red-500 mr-1.5"></div> Ocupadas: <span id="count-occupied" class="ml-1">0</span></span>
-                </div>
-                
-                <div class="w-px h-6 bg-gray-300 hidden md:block"></div>
-
+            <div class="flex items-center gap-6" id="header-actions-mesas">
                 <label class="flex items-center cursor-pointer">
                     <span class="mr-3 text-sm font-semibold text-gray-700" id="edit-mode-label">Modo Visualización</span>
                     <div class="relative">
@@ -90,36 +69,54 @@
                         <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
                     </div>
                 </label>
-                
                 <button id="btn-add-table" class="hidden bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 rounded-lg text-sm font-bold shadow-sm transition items-center gap-1">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> Mesa
+                    + Añadir Mesa
+                </button>
+            </div>
+            
+            <div class="flex items-center gap-6 hidden-view" id="header-actions-delivery">
+                <button id="btn-add-delivery" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-sm font-bold shadow-sm transition">
+                    + Nuevo Pedido Delivery
                 </button>
             </div>
         </header>
 
         <div class="flex-1 flex overflow-hidden">
             
-            <div id="floor-plan" class="flex-1 relative overflow-auto shadow-inner bg-gray-50">
-                </div>
+            <div id="view-mesas" class="flex-1 relative overflow-auto shadow-inner bg-gray-50 transition-all">
+                <div id="floor-plan" class="w-full h-full relative"></div>
+            </div>
 
-            <div id="table-panel" class="w-80 bg-white border-l border-gray-200 shadow-2xl flex flex-col transform translate-x-full transition-transform duration-300 z-10 absolute right-0 top-0 bottom-0 md:relative md:translate-x-0 hidden">
+            <div id="view-delivery" class="flex-1 overflow-auto bg-gray-50 p-6 hidden-view transition-all">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="delivery-list">
+                    </div>
+            </div>
+
+            <div id="order-panel" class="w-96 bg-white border-l border-gray-200 shadow-2xl flex flex-col transform translate-x-full transition-transform duration-300 z-10 absolute right-0 top-0 bottom-0 md:relative md:translate-x-0 hidden">
                 
-                <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                    <h3 class="text-xl font-bold text-gray-800" id="panel-title">Mesa --</h3>
-                    <button id="btn-close-panel" class="text-gray-400 hover:text-gray-600">
+                <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-900 text-white">
+                    <div>
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400" id="panel-type">Origen</span>
+                        <h3 class="text-xl font-black" id="panel-title">--</h3>
+                    </div>
+                    <button id="btn-close-panel" class="text-gray-400 hover:text-white transition">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     </button>
                 </div>
 
-                <div class="p-4 flex-1 overflow-y-auto" id="panel-content">
-                    <p class="text-gray-500 text-sm text-center mt-10">Selecciona una mesa para ver sus detalles.</p>
-                </div>
+                <div class="p-4 flex-1 overflow-y-auto bg-gray-50" id="panel-content">
+                    </div>
 
-                <div class="p-4 border-t border-gray-100 bg-gray-50 space-y-2" id="panel-actions" style="display: none;">
-                    <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg shadow-sm transition">
-                        Añadir Pedido
-                    </button>
-                    <button class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 rounded-lg shadow-sm transition flex justify-center items-center gap-2" id="btn-pay">
+                <div class="p-4 border-t border-gray-200 bg-white" id="panel-actions" style="display: none;">
+                    <div class="flex justify-between items-end mb-4">
+                        <span class="text-sm font-bold text-gray-500 uppercase tracking-wider">Total a Pagar</span>
+                        <span class="text-3xl font-black text-green-600" id="panel-total">$0.00</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 mb-2">
+                        <button id="btn-add-product" class="bg-gray-100 hover:bg-blue-100 text-gray-800 hover:text-blue-700 font-bold py-2 rounded-lg text-xs uppercase transition border border-gray-200">+ Producto</button>
+                        <button class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 rounded-lg text-xs uppercase transition border border-gray-200">Imprimir</button>
+                    </div>
+                    <button id="btn-open-payment" class="w-full bg-green-600 hover:bg-green-700 text-white font-black uppercase tracking-widest py-4 rounded-xl shadow-[0_0_15px_rgba(22,163,74,0.4)] transition active:scale-95 text-lg">
                         Cobrar Cuenta
                     </button>
                 </div>
@@ -128,5 +125,63 @@
         </div>
     </main>
 
+    <div id="modal-add-product" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform scale-95 transition-transform duration-300" id="modal-add-product-content">
+            <div class="bg-gray-900 p-4 flex justify-between items-center">
+                <h3 class="text-white font-bold tracking-widest uppercase text-sm">Añadir al Pedido</h3>
+                <button onclick="closeModal('modal-add-product')" class="text-gray-400 hover:text-white transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="p-6">
+                <label class="block text-xs font-bold text-gray-700 mb-2 uppercase tracking-wider">Menú Disponible</label>
+                <div class="space-y-2 max-h-72 overflow-y-auto pr-2" id="catalog-list">
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-payment" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden transform scale-95 transition-transform duration-300" id="modal-payment-content">
+            <div class="bg-green-600 p-6 text-center text-white relative">
+                <button onclick="closeModal('modal-payment')" class="absolute top-4 right-4 text-green-200 hover:text-white transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+                <h3 class="font-bold tracking-widest uppercase text-sm mb-1 opacity-80" id="pay-title">Cobro</h3>
+                <p class="text-5xl font-black tracking-tighter" id="pay-total">$0.00</p>
+            </div>
+            <div class="p-6">
+                <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Método de Pago</p>
+                <div class="grid grid-cols-3 gap-3 mb-6" id="payment-methods">
+                    <button class="pay-method-btn active border-2 border-green-500 bg-green-50 text-green-700 font-bold py-3 rounded-xl flex flex-col items-center gap-1 transition" data-method="efectivo"><span class="text-2xl">💵</span><span class="text-xs">Efectivo</span></button>
+                    <button class="pay-method-btn border-2 border-gray-200 text-gray-500 hover:border-blue-500 hover:bg-blue-50 hover:text-blue-700 font-bold py-3 rounded-xl flex flex-col items-center gap-1 transition" data-method="tarjeta"><span class="text-2xl">💳</span><span class="text-xs">Punto Venta</span></button>
+                    <button class="pay-method-btn border-2 border-gray-200 text-gray-500 hover:border-purple-500 hover:bg-purple-50 hover:text-purple-700 font-bold py-3 rounded-xl flex flex-col items-center gap-1 transition" data-method="transferencia"><span class="text-2xl">📱</span><span class="text-xs">Pago Móvil</span></button>
+                </div>
+                <div id="cash-input-area">
+                    <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Monto Recibido</label>
+                    <div class="relative mb-2">
+                        <span class="absolute left-4 top-3.5 font-bold text-gray-500">$</span>
+                        <input type="number" id="pay-received" class="w-full border-2 border-gray-300 rounded-xl p-3 pl-8 text-xl font-black outline-none focus:border-green-500">
+                    </div>
+                    <div class="flex justify-between items-center text-sm font-bold">
+                        <span class="text-gray-500">Cambio a entregar:</span><span class="text-red-500 text-lg" id="pay-change">$0.00</span>
+                    </div>
+                </div>
+                <button id="btn-confirm-payment" class="w-full bg-gray-900 hover:bg-black text-white font-black uppercase tracking-widest py-4 rounded-xl mt-6 transition shadow-xl text-lg">
+                    Confirmar Pago
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function closeModal(id) {
+            const modal = document.getElementById(id);
+            const content = document.getElementById(id + '-content');
+            modal.classList.add('opacity-0');
+            content.classList.add('scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+    </script>
 </body>
 </html>

@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Envolviafood | Gestión Interna y RRHH</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script src="app.js" defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
@@ -15,33 +12,30 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         
-        /* Animación para el estado "En Turno" */
-        .pulse-green {
-            box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
-            animation: pulse-g 2s infinite;
-        }
+        .pulse-green { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); animation: pulse-g 2s infinite; }
         @keyframes pulse-g {
             0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
             70% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
             100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
         }
     </style>
+    <!-- 1. Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- 2. Tu Lógica -->
     <script src="app.js" defer></script>
 </head>
-<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
+<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800 relative">
 
     <aside class="w-64 bg-gray-900 text-white flex flex-col hidden md:flex shadow-xl z-20 border-r border-gray-800 shrink-0">
         <div class="h-16 flex items-center justify-center border-b border-gray-800">
             <h1 class="text-2xl font-bold tracking-widest uppercase">Envolvia<span class="text-blue-500">food</span></h1>
         </div>
-        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto" id="sidebarMenu">
-            </nav>
+        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto" id="sidebarMenu"></nav>
         <div class="p-4 border-t border-gray-800 bg-gray-900">
             <div class="flex items-center">
                 <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-sm font-bold shadow-inner">RT</div>
                 <div class="ml-3 truncate">
                     <p class="text-sm font-medium text-white truncate">Restaurante Test</p>
-                    <a href="index.html" class="text-xs text-gray-400 hover:text-blue-400 transition">Configuración</a>
                 </div>
             </div>
         </div>
@@ -55,7 +49,8 @@
                 Gestión Interna y RRHH
             </h2>
             <div class="flex gap-3">
-                <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm transition">
+                <!-- AÑADIMOS EL ID A ESTE BOTÓN -->
+                <button id="btn-open-employee-modal" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm transition">
                     + Registrar Empleado
                 </button>
             </div>
@@ -100,14 +95,6 @@
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex-1">
                     <div class="p-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
                         <h3 class="font-bold text-gray-800">Directorio de Personal</h3>
-                        <div class="flex gap-2">
-                            <select class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm bg-white outline-none focus:border-blue-500 text-gray-600">
-                                <option value="all">Todos los Roles</option>
-                                <option value="cocina">Cocina</option>
-                                <option value="salon">Salón</option>
-                                <option value="delivery">Delivery</option>
-                            </select>
-                        </div>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-sm">
@@ -121,7 +108,8 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100" id="employee-list">
-                                </tbody>
+                                <!-- Empleados inyectados por JS -->
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -139,30 +127,12 @@
                         </div>
                         
                         <p class="text-xs text-gray-400 font-semibold mb-3 text-center">Ingresa el PIN de empleado para marcar entrada/salida</p>
-                        <div class="flex gap-2 mb-4 w-full px-4">
-                            <input type="password" maxlength="4" placeholder="••••" class="w-full bg-gray-800 border border-gray-700 rounded-lg text-center text-xl font-bold py-2 outline-none focus:border-blue-500 tracking-[0.5em] text-white">
-                        </div>
-                        <button class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg transition uppercase text-sm tracking-widest shadow-[0_0_15px_rgba(37,99,235,0.3)]">
-                            Registrar
-                        </button>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-                    <h3 class="font-bold text-gray-800 mb-4 border-b border-gray-100 pb-2">Resumen de Turnos (Semana)</h3>
-                    <div class="space-y-3">
-                        <div class="flex justify-between items-center text-sm">
-                            <span class="text-gray-600 font-medium">Horas Trabajadas</span>
-                            <span class="font-bold text-gray-900">142 hrs</span>
-                        </div>
-                        <div class="flex justify-between items-center text-sm">
-                            <span class="text-gray-600 font-medium">Horas Extra</span>
-                            <span class="font-bold text-yellow-600">12 hrs</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
-                            <div class="bg-blue-600 h-2 rounded-full" style="width: 75%"></div>
-                        </div>
-                        <p class="text-[10px] text-gray-400 font-semibold uppercase tracking-widest mt-1 text-right">75% del presupuesto asignado</p>
+                        <form id="clock-form" class="flex gap-2 mb-4 w-full px-4 flex-col">
+                            <input type="password" id="clock-pin" maxlength="4" placeholder="••••" class="w-full bg-gray-800 border border-gray-700 rounded-lg text-center text-xl font-bold py-2 outline-none focus:border-blue-500 tracking-[0.5em] text-white">
+                            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg transition uppercase text-sm tracking-widest mt-2 shadow-[0_0_15px_rgba(37,99,235,0.3)]">
+                                Registrar
+                            </button>
+                        </form>
                     </div>
                 </div>
 
@@ -170,5 +140,53 @@
 
         </div>
     </main>
+
+    <!-- ========================================== -->
+    <!-- MODAL: REGISTRAR EMPLEADO -->
+    <!-- ========================================== -->
+    <div id="modal-employee" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform scale-95 transition-transform duration-300" id="modal-employee-content">
+            <div class="bg-gray-900 p-4 flex justify-between items-center">
+                <h3 class="text-white font-bold tracking-widest uppercase text-sm">Nuevo Empleado</h3>
+                <button id="btn-close-modal" class="text-gray-400 hover:text-white transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <form id="form-employee" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Nombre Completo</label>
+                    <input type="text" id="emp-name" required placeholder="Ej. Carlos Mendoza" class="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:border-blue-500 text-sm">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Rol</label>
+                        <input type="text" id="emp-role" placeholder="Ej. Chef" required class="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:border-blue-500 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Área</label>
+                        <select id="emp-area" class="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:border-blue-500 text-sm">
+                            <option value="Cocina">Cocina</option>
+                            <option value="Salón">Salón</option>
+                            <option value="Delivery">Delivery</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Turno</label>
+                        <input type="text" id="emp-shift" placeholder="08:00 - 16:00" required class="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:border-blue-500 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">PIN (4 Dígitos)</label>
+                        <input type="text" id="emp-pin" maxlength="4" pattern="[0-9]{4}" placeholder="1234" required class="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:border-blue-500 text-center tracking-widest font-mono font-bold">
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl mt-2 transition shadow-md">
+                    Guardar Empleado
+                </button>
+            </form>
+        </div>
+    </div>
+
 </body>
 </html>
