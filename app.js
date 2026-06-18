@@ -5,9 +5,11 @@
 // 1. CONFIGURACIÓN MAESTRA DE SUPABASE
 const supabaseUrl = 'https://nmepokgmztzbanzzazzx.supabase.co';
 const supabaseKey = 'sb_publishable_mYOTFbeLCBs4jvBQZftVEQ_QXKW_VXl';
-const supabase = window.supabase ? window.supabase.createClient(supabaseUrl, supabaseKey) : null;
 
-if (supabase) {
+// Cambiamos el nombre a "supabaseClient" para evitar choques con el CDN
+const supabaseClient = window.supabase ? window.supabase.createClient(supabaseUrl, supabaseKey) : null;
+
+if (supabaseClient) {
     console.log("✅ Conexión con Supabase establecida.");
 } else {
     console.warn("⚠️ Supabase no detectado. Verifica la etiqueta <script> en tu HTML.");
@@ -375,7 +377,6 @@ function initDelivery() {
         });
     }
 
-    // Funciones expuestas globalmente para onclick en HTML inyectado
     window.updateOrderZone = function(orderId, newZoneId) {
         const order = deliveryOrders.find(o => o.id === orderId);
         if (order) { order.zoneId = newZoneId; renderOrders(); }
@@ -391,7 +392,7 @@ function initDelivery() {
 
 
 // ==============================================================================
-// MÓDULO 4: INGENIERÍA DE MENÚ (Costos)
+// MÓDULO 4: INGENIERÍA DE MENÚ E INVENTARIO
 // ==============================================================================
 function initCostos() {
     const inventory = {
@@ -476,7 +477,7 @@ function initCostos() {
 
 
 // ==============================================================================
-// MÓDULO 5: RRHH Y FICHAJE (interna.html)
+// MÓDULO 5: GESTIÓN DE RRHH Y FICHAJE
 // ==============================================================================
 function initInterna() {
     let employees = [
